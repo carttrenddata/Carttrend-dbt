@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: Satisfaction
+    columns:
+      - name: id_satisfaction
+        tests:
+          - not_null
+          - unique
+  - name: Details_commandes
+    columns:
+      - name: id_commande
+        tests:
+          - not_null
+          - unique
+
+  - name: Promotions
+    columns:
+      - name: id_promotion
+        tests:
+          - not_null
+          - unique
+
+      - name: id_produit
+        tests:
+          - not_null
+          - relationships:
+              to: ref('Produits')
+              field: id_produit
+
+      - name: type_promotion
+        description: soit 'Pourcentage' soit 'Remise fixe'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Pourcentage', 'Remise fixe']
+
+      - name: valeur_promotion
+        description: en euro
+        tests:
+          - not_null
+          - numeric
+
+      - name: date_debut
+        description: Date de début de la promotion 'yyyy-mm-dd'
+        tests:
+          - not_null
+
+      - name: date_fin
+        description: Date de fin de la promotion 'yyyy-mm-dd'
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "date_fin >= date_debut"
+
+      - name: responsable_promotion
+        description: title de la responsable, ex., 'Responsable Marketing'
+        tests:
+          - not_null
+          
+  - name: Commandes
+    columns:
+      - name: id_commande
+        tests:
+          - not_null
+          - unique
+      - name: id_client
+      - name: id_entrepot_depart
+      - name: date_commande
+      - name: id_promotion_appliquee
+      - name: mode_de_paiement
+      - name: numero_tracking
+      - name: date_livraison_estimee
