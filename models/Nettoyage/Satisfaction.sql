@@ -1,9 +1,9 @@
 select 
 id_satisfaction,
 id_commande,
-CASE 
+CASE # Hugues : Syntaxe du Case corrigée
     WHEN note_client > 5 THEN 5
-    ELSE note_client < 1 THEN 1
+    WHEN note_client < 1 THEN 1
     ELSE note_client
 END AS note_client,
 commentaire,
