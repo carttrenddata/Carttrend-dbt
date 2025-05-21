@@ -17,12 +17,8 @@ with tel as (
         ) ac using(id_client)
 )
 select 
-    CASE
-        WHEN REGEXP_CONTAINS(id_client, r'^C\d{5}$') THEN id_client
-        ELSE NULL
-    END as id_client,
-    initcap(prenom_client) as prenom,
-    initcap(nom_client) as nom,
+    id_client,
+    sha256(CONCAT(prenom_client, nom_client)) as hash_prenom_nom,
     CASE 
         WHEN REGEXP_CONTAINS(email, r'^[\w\.-]+@[\w-]+.[A-Za-z]+$') THEN email
         ELSE NULL
@@ -45,7 +41,6 @@ select
         WHEN DATE_DIFF(date_inscription, CURRENT_DATE(), DAY) <= 0 THEN date_inscription
         ELSE NULL
     END as date_inscription,
-    favoris as favoris,
     CASE
         WHEN REGEXP_CONTAINS(adresse_ip, r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') THEN adresse_ip
         ELSE NULL
