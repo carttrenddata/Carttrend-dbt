@@ -6,7 +6,7 @@ SELECT
         ELSE volume_mentions 
     END AS volume_mentions,
     CASE 
-        WHEN sentiment_global IN ('positif', 'négatif', 'neutre') THEN sentiment_global
+        WHEN sentiment_global IN ('Positif', 'Négatif', 'Neutre') THEN sentiment_global
         ELSE NULL 
     END AS sentiment_global,
     CASE 

@@ -6,7 +6,7 @@ case
     else 'Autre'
 end as type_machine,
 case
-    when LOWER(__tat_machine) in ('en service','en panne','en maintenance') then INITCAP(REPLACE(__tat_machine, 'En ', '')) -- Hugues : Retrait du 'en', ajout d'un capitalisation initiale ex 'Panne'
+    when LOWER(__tat_machine) in ('en service','en panne','en maintenance') then INITCAP(REPLACE(__tat_machine, 'En ', ''))
     else 'Autre'
 end as etat_machine,
 case

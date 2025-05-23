@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  # Commentaires ------------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Commentaires
+    description: Mart avec une colone unique pour le nuage de mots
+    columns: 
+      - name: commentaire
+
+  # Notes Clients -----------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Notes_Clients
+    columns: 
+      - name: id_produit
+      - name: nom
+      - name: categorie
+      - name: date_commande
+      - name: date_livraison_estimee
+      - name: type_plainte
+      - name: avg_note_client

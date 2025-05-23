@@ -62,6 +62,8 @@ models:
         description: Email du client valide ou NULL
       - name: age
         description: Age du client (int). Chiffre superieur a 0 ou NULL
+      - name: tranche_age
+        description: Tranche d'age. String '<=25', '25-40', '40-55', '55-70' ou '>70'
       - name: genre
         description: Genre du client. 'Homme', 'Femme' ou NULL
       - name: frequence_visites
@@ -70,6 +72,8 @@ models:
         description: Numero de téléphone au format '+XXX-XXX-XXX-XXXX' ou NULL
       - name: date_inscription
         description: Date d'inscription (date) du client ou NULL. Avant la date d'aujourd'hui
+      - name: anciennete_jours
+        description: Nombre de jours depuis l'inscription du client
       - name: ip
         description: Adresse IPv4 du client ou NULL. Au format 'XXX.XXX.XXX.XXX'
         
@@ -80,15 +84,15 @@ models:
     columns:
       - name: id_commande
         description: Clé Primaire, Identifiant unique de la commande
-        tests:  # Hugues : Retrait du test not_null, deja effectué dans le modele (performance)
+        tests:
           - unique
       - name: id_client
         description: Clé Etrangère, Identifiant du client ayant passé la commande
-        tests:  # Hugues : Retrait du test not_null, redondant avec le test de clé etrangere (performance)
+        tests:
           - relationships:
               to: ref('Clients')
               field: id_client
-      - name: id_entrepot_depart
+      - name: id_entrepot
         description: Clé Etrangère, Entrepôt de départ de la commande
         tests:
           - relationships:
@@ -96,40 +100,42 @@ models:
               field: id_entrepot
       - name: date_commande
         description: Date à laquelle la commande a été effectuée
-        tests: # Hugues : Ajout du test du type de la colone (date)
+        tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: date
       - name: id_promotion
-        description: Clé Etrangère, Promotion appliquée à la commande
+        description: Clé Etrangère ou NULL, Promotion appliquée à la commande
         tests:
           - relationships:
               to: ref('Promotions')
               field: id_promotion
+              config:
+                severity: warn
       - name: mode_de_paiement
         description: Méthode de paiement utilisée pour la commande - PayPal, Virement bancaire, Carte de crédit, sinon null
       - name: numero_tracking
         description: Numéro de suivi de la commande
       - name: date_livraison_estimee
-        description: Date estimée de livraison de la commande. Garantie > date_commande ou null # Hugues : Legerement reformulé
-        tests: # Hugues : Ajout du test du type de la colone (date)
+        description: Date estimée de livraison de la commande. Garantie > date_commande ou null
+        tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: date
 
   # Details_Commandes -------------------------------------------------------------------------------------
   # -------------------------------------------------------------------------------------------------------
   - name: Details_commandes
-    description: Information sur la commande - produits, quantitées... # Hugues : Ajout d'une description
+    description: Information sur la commande - produits, quantitées...
     tests:
       - dbt_utils.expression_is_true:
           expression: 'quantite > 0'
     columns:
       - name: id_commande
-        tests: # Hugues : Retrait du test not_null, redondant avec le test de clé étrangère
+        tests:
           - relationships:
               to: ref('Commandes')
               field: id_commande
       - name: id_produit
-        tests: # Hugues : Retrait du test not_null, redondant avec le test de clé étrangère
+        tests:
           - relationships:
               to: ref('Produits')
               field: id_produit
@@ -139,6 +145,7 @@ models:
         description : La commande est emballée avec un emballage spécial. Type booléen 
           
   # Entrepots ---------------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------------------------
   - name: Entrepots
     description: Table des Entrepots Nettoyée
     tests:
@@ -165,9 +172,13 @@ models:
       - name: temperature
         description: Temperature moyenne mesurée dans l'entrepot
 
-  # Entrepots_Machines ------------------------------------------------------------------------------------
-  - name: Entrepots_Machines # Hugues : Reformulations globales
-    description: Table contenant l'etat et le fonctionnement des machines des entrepots
+  # Entrepots_Machines -----------------------------------------------------------------------------------
+  # ------------------------------------------------------------------------------------------------------
+  - name: Entrepots_Machines
+    description: Table qui décrit l'etat de fonctionnement des machines des entrepots
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: 'REGEXP_CONTAINS(id_machine, r"^ME\d{6}$")'
     columns :
     - name: id_machine
       description: identifiant de la machine
@@ -175,7 +186,7 @@ models:
         - not_null
     - name: id_entrepot
       description: id de l'entrepot contenant la machine. Cle etrangere
-      tests:  # Hugues : Ajout du test de clé etrangere
+      tests: 
         - relationships:
             to: ref('Entrepots')
             field: id_entrepot
@@ -184,13 +195,14 @@ models:
     - name: etat_machine
       description: Etat de Fonctionnement de la machine. Garanti 'Service','Panne','Maintenance' ou 'Autre'
     - name: temps_d_arret
-      description: Duree de non fonctionnement de la machine # Hugues : retrait du test. Le temps d'arret peut etre 0 (c'est meme desirable !)
+      description: Duree de non fonctionnement de la machine
     - name: volume_traite
       description: le nombre de produit traités par ma machine dans le mois
     - name: date 
       description: date du premier jour du mois évalué 
 
   # Posts -------------------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------------------------
   - name : Posts
     columns :
     - name : id_post
@@ -199,19 +211,20 @@ models:
         - unique
     - name : date_post
       description : date de publication du post
-      tests: # Hugues : Ajout du test du type de la colone (date)
+      tests:
         - dbt_expectations.expect_column_values_to_be_of_type:
             column_type: date
-    - name : id_canal # Hugues : CriCri, aurait-tu oublié de modifier cette ligne apres la normalisation des canaux??
+    - name : id_canal
       description : id du canal utilisé. Clé étrangère, mais pas de test car garantie d'exister dans la table Canaux
     - name : volume_mentions
       description : Nombre d'interactions par post (int), garanti > 0
     - name : sentiment global
-      description : Sentiment lié au post. Peut être 'Positif', 'Neutre' ou 'Negatif' ou 'NULL' # OU NULL!!!!
+      description : Sentiment lié au post. Peut être 'Positif', 'Neutre' ou 'Negatif' ou 'NULL'
     - name : contenu_post
       description : Contenu du post publié
 
   # Produits ----------------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------------------------
   - name: Produits
     description: Table des Produits nettoyée
     tests:
@@ -240,13 +253,32 @@ models:
       - name: variation
         description: Nom de la variation (taille, gamme...) ou NULL. Premiere lettre en majuscule
 
+  # Produits Favoris --------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------------------------
+  - name: Produits_Favoris
+    description: Table contenant les identifiants des produits que les clients ont ajoutés dans leur favoris
+    columns:
+      - name: id_client
+        description: Clé etrangere client
+        tests:
+          - relationships:
+              to: ref('Clients')
+              field: id_client
+      - name: id_produit
+        description: Clé etrangere produit
+        tests:
+          - relationships:
+              to: ref('Produits')
+              field: id_produit
+
   # Promotions --------------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------------------------
   - name: Promotions
     tests:
       - dbt_utils.expression_is_true:
           expression: 'REGEXP_CONTAINS(id_promotion, r"^P\d{3}$")'
       - dbt_utils.expression_is_true:
-          expression: 'pourcentage_promotion > 0 and pourcentage_promotion < 1'
+          expression: 'pourcentage_promotion > 0'
           config:
             severity: warn
     columns:
@@ -255,13 +287,10 @@ models:
           - not_null
           - unique
       - name: id_produit
-        tests: # Hugues : retrait du test not_null, redondant avec le test de cle etrangere
+        tests:
           - relationships:
               to: ref('Produits')
               field: id_produit
-      #- name: type_promotion
-      #  description: soit 'Pourcentage' soit 'Remise fixe'
-      # Hugues : Jiang, n'aurait tu pas oublié de retirer ca ?
       - name: valeur_promotion
         description: en euro
       - name: pourcentage_promotion
@@ -270,18 +299,14 @@ models:
         description: Date de début de la promotion 'yyyy-mm-dd'
         tests:
           - not_null
-      - name: date_fin # Hugues retrait du test non_null (promotion sans date de limite connue)
+      - name: date_fin
         description: Date de fin de la promotion 'yyyy-mm-dd'
-      #- name: responsable_promotion                 
-      #  description: title de la responsable, ex., 'Responsable Marketing'
-      #  tests:
-      #    - not_null Brigitte ?????
 
   # Satisfaction ------------------------------------------------------------------------------------------
   - name: Satisfaction
     columns:
       - name: id_satisfaction
-        tests: # Hugues : Retrait du test de cle etrangere, ce n'en est pas une !
+        tests:
           - unique
           - not_null
       - name: id_commande # Hugues : oubli de cette colone, CriCri !
@@ -302,15 +327,4 @@ models:
         description : Type de plainte effectuée par le client
       - name : employe_support
         description : identifiant du membre du service support
-
-
-          
-
-
-
-
-          
-
-
-
-
+        

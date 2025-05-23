@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  # Engagement Campagnes ----------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Engagement_Campagnes
+    columns: 
+      - name: id_campagne
+      - name: date
+      - name: canal
+      - name: volume_mentions
+      - name: sentiment
+      - name: budget
+      - name: impressions
+      - name: clics
+      - name: conversions
+      - name: ctr
+
+  # Produits Favoris -------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Produits_Favoris
+    columns: 
+      - name: id_produit
+      - name: nom
+      - name: categorie
+      - name: sous_categorie
+      - name: variation
+      - name: marque
+      - name: nb_clients
+        description : Nombre de clients qui ont mis le produit en favoris

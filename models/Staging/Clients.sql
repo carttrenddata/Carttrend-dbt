@@ -28,6 +28,14 @@ select
         ELSE NULL
     END as age,
     CASE
+        WHEN __ge > 0  AND __ge <= 25 THEN '<=25'
+        WHEN __ge > 25  AND __ge <= 40 THEN '25-40'
+        WHEN __ge > 40  AND __ge <= 55 THEN '40-55'
+        WHEN __ge > 55  AND __ge <= 70 THEN '55-70'
+        WHEN __ge > 70 THEN '>70'
+        ELSE NULL
+    END as tranche_age,
+    CASE
         WHEN lower(genre) = 'homme' THEN 'Homme'
         WHEN lower(genre) = 'femme' THEN 'Femme'
         ELSE NULL
@@ -41,6 +49,10 @@ select
         WHEN DATE_DIFF(date_inscription, CURRENT_DATE(), DAY) <= 0 THEN date_inscription
         ELSE NULL
     END as date_inscription,
+    CASE
+        WHEN DATE_DIFF(date_inscription, CURRENT_DATE(), DAY) <= 0 THEN DATE_DIFF(CURRENT_DATE(), date_inscription, DAY)
+        ELSE NULL
+    END as anciennete_jours,
     CASE
         WHEN REGEXP_CONTAINS(adresse_ip, r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') THEN adresse_ip
         ELSE NULL
