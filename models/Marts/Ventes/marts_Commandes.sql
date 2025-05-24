@@ -17,6 +17,7 @@ left join {{ref('Produits_Favoris')}} pf on p.id_produit = pf.id_produit */
 select 
     co.date_commande,
     p.nom,
+    p.prix as prix_unitaire,
     ROUND(p.prix * dc.quantite, 2) AS prix_initial, -- Ajouté la multiplication pour avoir le prix total
     ROUND(case 
         when pourcentage_promotion is not NULL then
@@ -41,7 +42,7 @@ select
     cl.genre,
     cl.frequence_visites,
     cl.date_inscription,
-    cl.anciennete_jours
+    cl.anciennete_jours,
 from {{ref('Commandes')}} co
 left join {{ref('Details_commandes')}} dc using (id_commande)
 left join {{ref('Produits')}} p using (id_produit)
