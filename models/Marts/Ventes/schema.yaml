@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  # Commandes --------------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Commandes
+    description: Mart des commandes avec nombreuses jointures pour faciliter la visualisation
+    columns: 
+      - name: nom
+        description: nom du produit
+      - name: prix
+      - name: categorie
+      - name: sous_categorie
+      - name: produit_favori
+        description: True si le client a mis le produit en favori sinion False
+      - name: valeur_promotion
+      - name: pourcentage_promotion
+      - name: quantite
+      - name: age
+      - name: tranche_age
+      - name: genre
+      - name: frequence_visite
+      - name: date_inscirption
+      - name: anciennete_jours

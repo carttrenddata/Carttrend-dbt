@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  # Metiques Entrepots ------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Metriques_Entrepots
+    columns: 
+      - name: date
+        description: Premier jour du mois sur lequels les metriques sont calculées
+      - name: id_entrepot
+      - name: localisation
+      - name: nb_commandes_traitees
+      - name: moyenne_delai_livraison_et_traitement
+
+  # Metiques Machines ------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------------
+  - name: mart_Metriques_Machines
+    columns: 
+      - name: date
+        description: Premier jour du mois sur lequels les metriques sont calculées
+      - name: id_machine
+      - name: id_entrepot
+      - name: localisation
+      - name: volume_traite
+      - name: type_machine
+      - name: etat_machine
+      - name: temps_d_arret
+      - name: delai_livraison_et_traitement_entrepot
+      - name: nombres_commande_traitees_entrepot

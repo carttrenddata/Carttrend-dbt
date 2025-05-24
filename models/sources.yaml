@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: carttrend_brut
+    tables:
+      - name: Carttrend_Campaigns
+      - name: Carttrend_Clients
+      - name: Carttrend_Commandes
+      - name: Carttrend_Details_Commandes
+      - name: Carttrend_Entrepots
+      - name: Carttrend_Entrepots_Machines
+      - name: Carttrend_Posts
+      - name: Carttrend_Produits
+      - name: Carttrend_Promotions
+      - name: Carttrend_Satisfaction
