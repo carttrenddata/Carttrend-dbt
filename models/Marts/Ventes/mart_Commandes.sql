@@ -34,8 +34,8 @@ select
         then true
         else false
     end as produit_favori, -- Corigé le test du produit favori qui ne marchait pas
-    pr.valeur_promotion,
-    pr.pourcentage_promotion,
+    IFNULL(pr.valeur_promotion, 0) as valeur_promotion,
+    IFNULL(pr.pourcentage_promotion, 0) as pourcentage_promotion,
     dc.quantite,
     cl.age,
     cl.tranche_age,
