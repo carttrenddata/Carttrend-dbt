@@ -7,6 +7,10 @@ models:
     description: Table des Campagnes Marketing Normalisée et Nettoyée.
     tests:
       - dbt_utils.expression_is_true:
+          expression: 'REGEXP_CONTAINS(id_campagne, r"^CAMP\d{3}$")'
+          config:
+            severity: warn
+      - dbt_utils.expression_is_true:
           expression: 'budget > 0 and impressions > 0 and clics > 0 and conversions > 0'
           config:
             severity: warn

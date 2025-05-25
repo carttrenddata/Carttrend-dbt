@@ -1,15 +1,15 @@
 version: 2
 
 sources:
-  - name: carttrend_brut
+  - name: google_drive
     tables:
-      - name: Carttrend_Campaigns
-      - name: Carttrend_Clients
-      - name: Carttrend_Commandes
-      - name: Carttrend_Details_Commandes
-      - name: Carttrend_Entrepots
-      - name: Carttrend_Entrepots_Machines
-      - name: Carttrend_Posts
-      - name: Carttrend_Produits
-      - name: Carttrend_Promotions
-      - name: Carttrend_Satisfaction
+      - name: carttrend_campaigns_campagnes
+      - name: carttrend_clients_clients
+      - name: carttrend_commandes_commandes
+      - name: carttrend_details_commandes_details_commandes_
+      - name: carttrend_entrepots_entrepots
+      - name: carttrend_entrepots_machines_machines_entrepots
+      - name: carttrend_posts_posts
+      - name: carttrend_produits_produits
+      - name: carttrend_promotions_promotions
+      - name: carttrend_satisfaction_satisfaction

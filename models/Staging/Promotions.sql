@@ -1,4 +1,4 @@
-select * from -- Hugues : Modification pour supprimer la ligne si la remise est superieure au prix du produit
+select * from
 (
     select 
         REGEXP_REPLACE(p.id_promotion, r'^PROM(\d{3})$', r'P\1') as id_promotion,
@@ -13,13 +13,13 @@ select * from -- Hugues : Modification pour supprimer la ligne si la remise est 
             when (p.type_promotion = 'Pourcentage') then p.valeur_promotion
             when (p.type_promotion = 'Remise fixe') then p.valeur_promotion / pr.prix 
         end as pourcentage_promotion,
-        p.date_d__but as date_debut,
+        p.date_debut as date_debut,
         p.date_fin as date_fin
-    from {{source('carttrend_brut','Carttrend_Promotions')}} p
+    from {{source('google_drive','carttrend_promotions_promotions')}} p
     join (
         select id_produit, prix from {{ref('Produits')}}
         ) as pr
         on p.id_produit = pr.id_produit
-    where DATE_DIFF(p.date_fin, p.date_d__but, day) >= 0
+    where DATE_DIFF(p.date_fin, p.date_debut, day) >= 0
 )
 where pourcentage_promotion < 1

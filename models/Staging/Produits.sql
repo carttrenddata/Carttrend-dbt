@@ -1,7 +1,7 @@
 select 
     ID as id_produit,
     CASE 
-        WHEN Cat__gorie IN ('Livres','Alimentation','Mode','Maison','Électronique','Jouets','Beauté','Sports') THEN Cat__gorie
+        WHEN Categorie IN ('Livres','Alimentation','Mode','Maison','Électronique','Jouets','Beauté','Sports') THEN Categorie
         ELSE 'Autre'
     END as categorie,
     initcap(Marque) as marque,
@@ -10,9 +10,9 @@ select
         WHEN Prix < 0 Then 0
         ELSE Prix
     END, 2) as prix,
-    Sous_cat__gorie as sous_categorie,
+    Sous_categorie as sous_categorie,
     Variation as variation
 from 
-    {{source("carttrend_brut", "Carttrend_Produits")}}
+    {{source("google_drive", "carttrend_produits_produits")}}
 
 

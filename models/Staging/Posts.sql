@@ -15,5 +15,5 @@ SELECT
     END AS date_post,
     contenu_post
 
-FROM {{source("carttrend_brut",'Carttrend_Posts')}} p
+FROM {{source("google_drive",'carttrend_posts_posts')}} p
 JOIN {{ref('Canaux')}} c ON c.canal = p.canal_social
