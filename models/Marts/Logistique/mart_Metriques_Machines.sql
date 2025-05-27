@@ -10,6 +10,7 @@ WITH commandes_mois AS (
 SELECT 
   m.date,
   m.id_machine,
+  m.id_entrepot,
   e.localisation,
   m.volume_traite,
   m.type_machine,

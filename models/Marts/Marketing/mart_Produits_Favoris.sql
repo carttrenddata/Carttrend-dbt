@@ -3,7 +3,6 @@ SELECT
     p.nom,
     p.categorie,
     p.sous_categorie,
-    p.variation,
     p.marque,
     (
         SELECT COUNT(id_produit)

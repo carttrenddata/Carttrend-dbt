@@ -14,8 +14,8 @@ WITH
         GROUP BY date_commande
     )
 SELECT
-  cal.date,
-  ROUND(IFNULL(ca.ca, 0), 2) AS chiffre_affaire
+    cal.date,
+    ROUND(IFNULL(ca.ca, 0), 2) as chiffre_affaire
 FROM cal
     LEFT JOIN ca USING(date)
-ORDER BY cal.date
+ORDER BY date

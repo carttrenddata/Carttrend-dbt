@@ -5,6 +5,7 @@ SELECT
     date_commande,
     date_livraison_estimee, 
     type_plainte,
+    id_client,
     AVG(note_client) AS avg_note_client
 FROM {{ ref("Produits") }}
 JOIN {{ ref("Details_commandes")}} USING(id_produit)
@@ -16,5 +17,6 @@ GROUP BY
     categorie, 
     date_commande,
     date_livraison_estimee, 
-    type_plainte
+    type_plainte,
+    id_client
 ORDER BY avg_note_client ASC
