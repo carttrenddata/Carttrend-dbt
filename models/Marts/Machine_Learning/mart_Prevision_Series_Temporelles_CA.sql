@@ -11,6 +11,7 @@ WITH
             date_commande AS date,
             SUM(prix_apres_remise) AS ca
         FROM {{ref('mart_Commandes')}}
+        WHERE statut_commande != 'Annulée'
         GROUP BY date_commande
     )
 SELECT
