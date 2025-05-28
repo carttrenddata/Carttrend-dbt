@@ -3,7 +3,7 @@ WITH split_favoris AS (
     id_client,
     SPLIT(favoris, ',') AS favoris_array
   FROM
-    {{source("carttrend_brut", "Carttrend_Clients")}}
+    {{source("google_drive", "carttrend_clients_clients")}}
 )
 SELECT
   id_client,

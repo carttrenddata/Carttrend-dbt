@@ -1,9 +1,9 @@
 WITH canal as(
     SELECT canal_social
-    FROM {{source("carttrend_brut",'Carttrend_Posts')}}
+    FROM {{source("google_drive",'carttrend_posts_posts')}}
     UNION DISTINCT
     SELECT canal
-    FROM {{source('carttrend_brut', 'Carttrend_Campaigns')}}
+    FROM {{source('google_drive', 'carttrend_campaigns_campagnes')}}
 )
 SELECT
     ROW_NUMBER() OVER() as id_canal,

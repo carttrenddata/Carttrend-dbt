@@ -1,19 +1,19 @@
 with tel as (
     select
         id_client,
-        REGEXP_REPLACE(num__ro_t__l__phone, r'^.*?(\d{3})\D?(\d{3})\D?(\d{4}).*$', r'\1-\2-\3') AS numero_telephone,
+        REGEXP_REPLACE(numero_telephone, r'^.*?(\d{3})\D?(\d{3})\D?(\d{4}).*$', r'\1-\2-\3') AS numero_telephone,
         CASE 
             WHEN LENGTH(ac.area_code) = 3 THEN CONCAT('+', ac.area_code)
             WHEN LENGTH(ac.area_code) = 2 THEN CONCAT('+0', ac.area_code)
             WHEN LENGTH(ac.area_code) = 1 THEN CONCAT('+00', ac.area_code)
             ELSE '+033'
         END as area_code,
-    from {{source("carttrend_brut",'Carttrend_Clients')}}
+    from {{source("google_drive",'carttrend_clients_clients')}}
         join ( 
             SELECT 
                 id_client,
-                REGEXP_EXTRACT(num__ro_t__l__phone, r'^\+?([1-9]{0,3}).*$') AS area_code
-            FROM {{source("carttrend_brut",'Carttrend_Clients')}}
+                REGEXP_EXTRACT(numero_telephone, r'^\+?([1-9]{0,3}).*$') AS area_code
+            FROM {{source("google_drive",'carttrend_clients_clients')}}
         ) ac using(id_client)
 )
 select 
@@ -24,15 +24,15 @@ select
         ELSE NULL
     END as email,
     CASE
-        WHEN __ge > 0 THEN __ge
+        WHEN age > 0 THEN age
         ELSE NULL
     END as age,
     CASE
-        WHEN __ge > 0  AND __ge <= 25 THEN '<=25'
-        WHEN __ge > 25  AND __ge <= 40 THEN '25-40'
-        WHEN __ge > 40  AND __ge <= 55 THEN '40-55'
-        WHEN __ge > 55  AND __ge <= 70 THEN '55-70'
-        WHEN __ge > 70 THEN '>70'
+        WHEN age > 0  AND age <= 25 THEN '<=25'
+        WHEN age > 25  AND age <= 40 THEN '25-40'
+        WHEN age > 40  AND age <= 55 THEN '40-55'
+        WHEN age > 55  AND age <= 70 THEN '55-70'
+        WHEN age > 70 THEN '>70'
         ELSE NULL
     END as tranche_age,
     CASE
@@ -41,7 +41,7 @@ select
         ELSE NULL
     END as genre, # Probablement à changer de nos jours...
     CASE
-        WHEN fr__quence_visites > 0 THEN fr__quence_visites
+        WHEN frequence_visites > 0 THEN frequence_visites
         ELSE 0
     END as frequence_visites,
     CONCAT(tel.area_code, '-', tel.numero_telephone) as telephone,
@@ -57,6 +57,6 @@ select
         WHEN REGEXP_CONTAINS(adresse_ip, r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') THEN adresse_ip
         ELSE NULL
     END as ip    # IPv4 seulement
-from {{source("carttrend_brut",'Carttrend_Clients')}}
+from {{source("google_drive",'carttrend_clients_clients')}}
     join tel using(id_client)
 where id_client is not NULL

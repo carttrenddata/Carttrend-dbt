@@ -2,6 +2,7 @@ SELECT
   EXTRACT(MONTH FROM m.date) AS month,
   e.localisation,
   e.temperature,
+  m.volume_traite,
   m.type_machine,
   1 - m.temps_d_arret / (DATE_DIFF(
     DATE_ADD(m.date, INTERVAL 1 MONTH),

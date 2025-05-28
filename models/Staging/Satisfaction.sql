@@ -8,13 +8,13 @@ SELECT
     END AS note_client,
 
     CASE
-        WHEN temps_r__ponse_support < 0 THEN 0
-        ELSE temps_r__ponse_support
+        WHEN temps_reponse_support < 0 THEN 0
+        ELSE temps_reponse_support
     END AS delai_traitement,
 
     commentaire,
     plainte,
     type_plainte, 
-    employ___support AS employe_support
+    employe_support
 
-FROM {{source("carttrend_brut",'Carttrend_Satisfaction')}}
+FROM {{source("google_drive",'carttrend_satisfaction_satisfaction')}}

@@ -24,6 +24,5 @@ SELECT
         WHEN CTR > 0 AND CTR < 1 THEN CTR
         ELSE NULL
     END as ctr
-from {{source('carttrend_brut','Carttrend_Campaigns')}}
+from {{source('google_drive','carttrend_campaigns_campagnes')}}
     join {{ref('Canaux')}} c using(canal)
-WHERE REGEXP_CONTAINS(id_campagne, r'^CAMP\d{3}$')

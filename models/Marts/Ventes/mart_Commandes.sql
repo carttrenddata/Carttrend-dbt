@@ -34,15 +34,17 @@ select
         then true
         else false
     end as produit_favori, -- Corigé le test du produit favori qui ne marchait pas
-    pr.valeur_promotion,
-    pr.pourcentage_promotion,
+    IFNULL(pr.valeur_promotion, 0) as valeur_promotion,
+    IFNULL(pr.pourcentage_promotion, 0) as pourcentage_promotion,
     dc.quantite,
+    cl.id_client,
     cl.age,
     cl.tranche_age,
     cl.genre,
     cl.frequence_visites,
     cl.date_inscription,
     cl.anciennete_jours,
+    co.statut_commande
 from {{ref('Commandes')}} co
 left join {{ref('Details_commandes')}} dc using (id_commande)
 left join {{ref('Produits')}} p using (id_produit)
