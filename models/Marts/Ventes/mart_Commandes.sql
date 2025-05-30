@@ -44,7 +44,8 @@ select
     cl.frequence_visites,
     cl.date_inscription,
     cl.anciennete_jours,
-    co.statut_commande
+    co.statut_commande,
+    p.id_produit
 from {{ref('Commandes')}} co
 left join {{ref('Details_commandes')}} dc using (id_commande)
 left join {{ref('Produits')}} p using (id_produit)

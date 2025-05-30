@@ -7,7 +7,7 @@ select
     Sous_categorie as sous_categorie,
     initcap(Marque) as marque,
     CASE 
-        WHEN produit LIKE CONCAT('%', variation, '%') OR variation IS NULL THEN produit
+        WHEN produit LIKE CONCAT('%', variation, '%') OR variation IS NULL THEN produit -- vérifier si variation existe dans produit
         ELSE CONCAT(produit, variation)
     END AS nom,
     ROUND(CASE

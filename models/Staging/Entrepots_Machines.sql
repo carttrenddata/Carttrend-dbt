@@ -18,5 +18,5 @@ case
    else 0
 end as volume_traite,
 
-PARSE_DATE('%Y-%m', mois) as date
+PARSE_DATE('%Y-%m', mois) as date -- Format d'entrée: 2024-05; format renvoyé: 2024-05-01
 from {{source("google_drive", "carttrend_entrepots_machines_machines_entrepots")}}

@@ -1,7 +1,7 @@
 with tel as (
     select
         id_client,
-        REGEXP_REPLACE(numero_telephone, r'^.*?(\d{3})\D?(\d{3})\D?(\d{4}).*$', r'\1-\2-\3') AS numero_telephone,
+        REGEXP_REPLACE(numero_telephone, r'^.*?(\d{3})\D?(\d{3})\D?(\d{4}).*$', r'\1-\2-\3') AS numero_telephone, -- format remplacé: '123-456-7890'
         CASE 
             WHEN LENGTH(ac.area_code) = 3 THEN CONCAT('+', ac.area_code)
             WHEN LENGTH(ac.area_code) = 2 THEN CONCAT('+0', ac.area_code)
@@ -12,13 +12,13 @@ with tel as (
         join ( 
             SELECT 
                 id_client,
-                REGEXP_EXTRACT(numero_telephone, r'^\+?([1-9]{0,3}).*$') AS area_code
+                REGEXP_EXTRACT(numero_telephone, r'^\+?([1-9]{0,3}).*$') AS area_code -- récupérer les chiffres de 1 à 9 au début du numéro, jusqu’à 3 caractères max
             FROM {{source("google_drive",'carttrend_clients_clients')}}
         ) ac using(id_client)
 )
 select 
     id_client,
-    sha256(CONCAT(prenom_client, nom_client)) as hash_prenom_nom,
+    sha256(CONCAT(prenom_client, nom_client)) as hash_prenom_nom, --concaténer puis encrypter le prenom/nom des clients
     CASE 
         WHEN REGEXP_CONTAINS(email, r'^[\w\.-]+@[\w-]+.[A-Za-z]+$') THEN email
         ELSE NULL
@@ -48,7 +48,7 @@ select
     CASE 
         WHEN DATE_DIFF(date_inscription, CURRENT_DATE(), DAY) <= 0 THEN date_inscription
         ELSE NULL
-    END as date_inscription,
+    END as date_inscription, -- vérifier date_inscription > date d'aujourd'hui
     CASE
         WHEN DATE_DIFF(date_inscription, CURRENT_DATE(), DAY) <= 0 THEN DATE_DIFF(CURRENT_DATE(), date_inscription, DAY)
         ELSE NULL
@@ -56,7 +56,7 @@ select
     CASE
         WHEN REGEXP_CONTAINS(adresse_ip, r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') THEN adresse_ip
         ELSE NULL
-    END as ip    # IPv4 seulement
+    END as ip    # IPv4 seulement --Une adresse IPv4 est composée de 4 nombres entiers compris entre 0 et 255, séparés par des points.
 from {{source("google_drive",'carttrend_clients_clients')}}
     join tel using(id_client)
 where id_client is not NULL

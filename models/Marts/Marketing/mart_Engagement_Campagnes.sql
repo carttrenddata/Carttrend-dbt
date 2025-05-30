@@ -1,37 +1,3 @@
- /* WITH posts_stats AS (
-    SELECT
-        date_post as date,
-        id_canal,
-        SUM(volume_mentions) as volume_mentions,
-        AVG(
-            CASE
-                WHEN sentiment_global = 'Positif' THEN 3 
-                WHEN sentiment_global = 'Neutre' THEN 2
-                WHEN sentiment_global = 'Negatif' THEN 1
-                ELSE 2
-            END
-        ) AS sentiment
-    FROM {{ref('Posts')}}
-    GROUP BY date_post, id_canal
-)
-SELECT 
-    CASE
-        id_cam,
-    COALESCE(c.date, ps.date) AS date,
-    COALESCE(can.canal, can2.canal) AS canal,
-    ps.volume_mentions,
-    ps.sentiment,
-    c.budget,
-    c.impressions,
-    c.clics,
-    c.conversions,
-    c.ctr
-FROM {{ref('Campagnes')}} c
-    FULL JOIN posts_stats ps on c.date = ps.date AND c.id_canal = ps.id_canal
-    LEFT JOIN {{ref('Canaux')}} can on can.id_canal = c.id_canal
-    LEFT JOIN {{ref('Canaux')}} can2 on can2.id_canal = ps.id_canal */
-
-
 WITH 
   date_range AS (
     SELECT day
@@ -40,29 +6,25 @@ WITH
       (SELECT MAX(date) FROM {{ref('Campagnes')}})
     )) AS day
   ),
-  
+
   canals AS (
     SELECT id_canal, canal FROM {{ref('Canaux')}}
   ),
-  
+
   posts_stats AS (
     SELECT
       TRUE as is_post,
       date_post AS date,
       id_canal,
       SUM(volume_mentions) AS volume_mentions,
-      AVG(
-        CASE
-          WHEN sentiment_global = 'Positif' THEN 3 
-          WHEN sentiment_global = 'Neutre' THEN 2
-          WHEN sentiment_global = 'Negatif' THEN 1
-          ELSE 2
-        END
-      ) AS sentiment
+      SUM(CASE WHEN sentiment_global = 'Positif' THEN 1 ELSE 0 END) AS sentiment_positif,
+      SUM(CASE WHEN sentiment_global = 'Neutre' THEN 1 ELSE 0 END) AS sentiment_neutre,
+      SUM(CASE WHEN sentiment_global = 'Négatif' THEN 1 ELSE 0 END) AS sentiment_negatif,
+      SUM(CASE WHEN sentiment_global IS NULL THEN 1 ELSE 0 END) AS sentiment_absent
     FROM {{ref('Posts')}}
     GROUP BY date_post, id_canal
   ),
-  
+
   campagnes_stats AS (
     SELECT
       TRUE as is_campagne,
@@ -92,9 +54,13 @@ SELECT
   COALESCE(c.conversions, 0) AS conversions,
   COALESCE(c.ctr, 0) AS ctr,
   COALESCE(p.volume_mentions, 0) AS volume_mentions,
-  COALESCE(p.sentiment, 0) AS sentiment
+  COALESCE(p.sentiment_positif, 0) AS sentiment_positif,
+  COALESCE(p.sentiment_neutre, 0) AS sentiment_neutre,
+  COALESCE(p.sentiment_negatif, 0) AS sentiment_negatif,
+  COALESCE(p.sentiment_absent, 0) AS sentiment_absent
 FROM date_range d
 CROSS JOIN canals can
 LEFT JOIN campagnes_stats c ON c.date = d.day AND c.id_canal = can.id_canal
 LEFT JOIN posts_stats p ON p.date = d.day AND p.id_canal = can.id_canal
 ORDER BY date, can.canal
+
