@@ -1,7 +1,7 @@
 WITH commandes_mois AS (
     SELECT 
         id_entrepot,
-        DATE_TRUNC(date_commande, MONTH) AS mois,
+        DATE_TRUNC(date_commande, MONTH) AS mois, -- transformer format 2024-05-17 en 2024-05-01
         CAST(AVG(DATE_DIFF(date_livraison_estimee, date_commande, DAY)) AS INT64) AS delai_livraison_et_traitement_entrepot,
         COUNT(id_commande) as nombres_commande_traitees_entrepot
     FROM {{ref("Commandes")}}

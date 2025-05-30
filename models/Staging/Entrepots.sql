@@ -1,6 +1,6 @@
 select
     id_entrepot,
-    initcap(localisation) as localisation,
+    initcap(localisation) as localisation, -- ex. paris => Paris
     CASE 
         WHEN capacite_max < 0 THEN 0
         ELSE capacite_max
